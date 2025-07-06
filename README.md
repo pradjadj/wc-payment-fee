@@ -35,4 +35,4 @@ Saat plugin dihapus, semua pengaturan akan dihapus secara otomatis.
 ## Author
 
 Pradja DJ  
-[sgnet.co.id](https://sgnet.co.id)
+Contact: info@sgnet.co.id
