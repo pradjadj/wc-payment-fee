@@ -62,6 +62,10 @@ class WC_Payment_Fee_Plugin {
             return;
         }
 
+        if ( is_cart() ) {
+            return;
+        }
+
         if ( ! WC()->session ) {
             return;
         }
