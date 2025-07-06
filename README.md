@@ -12,7 +12,7 @@ Plugin WooCommerce untuk menambahkan biaya tambahan pembayaran yang dihitung dar
 - Pengaturan plugin tersedia di menu WooCommerce > Payment Fee.
 - Link pengaturan tersedia di sebelah tombol Deactivate pada halaman plugin.
 - File uninstall untuk menghapus semua pengaturan saat plugin dihapus.
-- Pada tipe persentase (%) biasa dipakai untuk MDR Payment Gateway agar merchant dapat pembayaran penuh, biaya tambahan dihitung bertingkat, contoh jika Subtotal = 100.000 + fee 0.7% (700) = 100.700 (nominal ini menjadi dasar perhitungan fee persentase) + fee 0.7% (lagi untuk perhitungan Fee yang akan tampil, sehingga fee yang tampil sebesar 705 pembulatan keatas dari 704.9 dari perhitungan 100.700) = Grand Total menjadi 100.705.
+- Pada tipe persentase (%) biasa dipakai untuk MDR Payment Gateway agar merchant dapat pembayaran penuh, biaya tambahan untuk tipe persen dihitung bertingkat. Contoh jika Subtotal = 100.000 + fee 0.7% (700) = 100.700 (nominal ini menjadi dasar perhitungan fee persentase) + fee 0.7% (lagi untuk perhitungan Fee yang akan tampil, sehingga fee yang tampil sebesar 705 pembulatan keatas dari 704.9 dari perhitungan 100.700) = Grand Total menjadi 100.705.
 
 ## Cara Instalasi
 
