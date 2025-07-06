@@ -105,16 +105,24 @@ class WC_Payment_Fee_Plugin {
         // Calculate fee amount
         $fee_amount = 0;
         if ( isset( $method_settings['fee_type'] ) && isset( $method_settings['fee_amount'] ) ) {
+            $rounding = ! empty( $method_settings['rounding'] );
             if ( $method_settings['fee_type'] === 'percent' ) {
                 // Two-tiered percentage fee calculation
                 $first_fee = (float) $method_settings['fee_amount'] / 100 * $base_amount;
-                $first_fee = ceil( $first_fee );
+                if ( $rounding ) {
+                    $first_fee = ceil( $first_fee );
+                }
                 $new_subtotal = $base_amount + $first_fee;
                 $fee_amount = (float) $method_settings['fee_amount'] / 100 * $new_subtotal;
-                $fee_amount = ceil( $fee_amount );
+                if ( $rounding ) {
+                    $fee_amount = ceil( $fee_amount );
+                }
             } else {
                 // fixed amount
                 $fee_amount = (float) $method_settings['fee_amount'];
+                if ( $rounding ) {
+                    $fee_amount = ceil( $fee_amount );
+                }
             }
         }
 
@@ -142,10 +150,11 @@ class WC_Payment_Fee_Plugin {
         $sanitized = array();
         foreach ( $input as $method => $settings ) {
             $sanitized[ sanitize_text_field( $method ) ] = array(
-                'enabled'   => ! empty( $settings['enabled'] ) ? 1 : 0,
-                'fee_type'  => in_array( $settings['fee_type'], array( 'percent', 'fixed' ), true ) ? $settings['fee_type'] : 'fixed',
-                'fee_amount'=> isset( $settings['fee_amount'] ) ? floatval( $settings['fee_amount'] ) : 0,
-                'fee_label' => isset( $settings['fee_label'] ) ? sanitize_text_field( $settings['fee_label'] ) : '',
+                'enabled'    => ! empty( $settings['enabled'] ) ? 1 : 0,
+                'fee_type'   => in_array( $settings['fee_type'], array( 'percent', 'fixed' ), true ) ? $settings['fee_type'] : 'fixed',
+                'fee_amount' => isset( $settings['fee_amount'] ) ? floatval( $settings['fee_amount'] ) : 0,
+                'fee_label'  => isset( $settings['fee_label'] ) ? sanitize_text_field( $settings['fee_label'] ) : '',
+                'rounding'   => ! empty( $settings['rounding'] ) ? 1 : 0,
             );
         }
         return $sanitized;
@@ -182,39 +191,42 @@ class WC_Payment_Fee_Plugin {
                 settings_fields( 'wc_payment_fee_group' );
                 do_settings_sections( 'wc_payment_fee_group' );
                 ?>
-                <table class="form-table" role="presentation">
-                    <thead>
-                        <tr>
-                            <th>Payment Method</th>
-                            <th>Enable Fee</th>
-                            <th>Fee Type</th>
-                            <th>Fee Amount</th>
-                            <th>Fee Label</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ( $payment_gateways as $gateway_id => $gateway ) :
-                        $method_settings = isset( $settings[ $gateway_id ] ) ? $settings[ $gateway_id ] : array();
-                        $enabled = ! empty( $method_settings['enabled'] );
-                        $fee_type = isset( $method_settings['fee_type'] ) ? $method_settings['fee_type'] : 'fixed';
-                        $fee_amount = isset( $method_settings['fee_amount'] ) ? $method_settings['fee_amount'] : '';
-                        $fee_label = isset( $method_settings['fee_label'] ) ? $method_settings['fee_label'] : '';
-                        ?>
-                        <tr>
-                            <td><?php echo esc_html( $gateway->get_title() ); ?></td>
-                            <td><input type="checkbox" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][enabled]' ); ?>" value="1" <?php checked( $enabled, true ); ?>></td>
-                            <td>
-                                <select name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][fee_type]' ); ?>">
-                                    <option value="fixed" <?php selected( $fee_type, 'fixed' ); ?>>Fixed</option>
-                                    <option value="percent" <?php selected( $fee_type, 'percent' ); ?>>Percent</option>
-                                </select>
-                            </td>
-                            <td><input type="number" step="0.0001" min="0" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][fee_amount]' ); ?>" value="<?php echo esc_attr( $fee_amount ); ?>"></td>
-                            <td><input type="text" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][fee_label]' ); ?>" value="<?php echo esc_attr( $fee_label ); ?>" placeholder="Payment Fee"></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <table class="form-table" role="presentation">
+            <thead>
+                <tr>
+                    <th>Payment Method</th>
+                    <th>Enable Fee</th>
+                    <th>Fee Type</th>
+                    <th>Fee Amount</th>
+                    <th>Fee Label</th>
+                    <th>Rounding Up</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ( $payment_gateways as $gateway_id => $gateway ) :
+                $method_settings = isset( $settings[ $gateway_id ] ) ? $settings[ $gateway_id ] : array();
+                $enabled = ! empty( $method_settings['enabled'] );
+                $fee_type = isset( $method_settings['fee_type'] ) ? $method_settings['fee_type'] : 'fixed';
+                $fee_amount = isset( $method_settings['fee_amount'] ) ? $method_settings['fee_amount'] : '';
+                $fee_label = isset( $method_settings['fee_label'] ) ? $method_settings['fee_label'] : '';
+                $rounding = ! empty( $method_settings['rounding'] );
+                ?>
+                <tr>
+                    <td><?php echo esc_html( $gateway->get_title() ); ?></td>
+                    <td><input type="checkbox" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][enabled]' ); ?>" value="1" <?php checked( $enabled, true ); ?>></td>
+                    <td>
+                        <select name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][fee_type]' ); ?>">
+                            <option value="fixed" <?php selected( $fee_type, 'fixed' ); ?>>Fixed</option>
+                            <option value="percent" <?php selected( $fee_type, 'percent' ); ?>>Percent</option>
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.0001" min="0" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][fee_amount]' ); ?>" value="<?php echo esc_attr( $fee_amount ); ?>"></td>
+                    <td><input type="text" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][fee_label]' ); ?>" value="<?php echo esc_attr( $fee_label ); ?>" placeholder="Payment Fee"></td>
+                    <td><input type="checkbox" name="<?php echo esc_attr( $this->option_name . '[' . esc_attr( $gateway_id ) . '][rounding]' ); ?>" value="1" <?php checked( $rounding, true ); ?>></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
                 <?php submit_button(); ?>
             </form>
         </div>
