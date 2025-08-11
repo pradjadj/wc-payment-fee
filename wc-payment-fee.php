@@ -2,7 +2,7 @@
 /*
 Plugin Name: WC Payment Fee
 Description: Adds an additional payment fee calculated from product price + shipping + other fees per payment method.
-Version: 1.0
+Version: 1.1
 Author: Pradja DJ
 Author URI: https://sgnet.co.id
 */
@@ -89,11 +89,20 @@ class WC_Payment_Fee_Plugin {
             return;
         }
 
-        // Calculate base amount: product price + shipping + other fees except this plugin fee
+        // Calculate base amount: (subtotal - coupons) + shipping + other fees except this plugin fee
         $base_amount = 0;
 
-        // Product subtotal (including taxes)
-        $base_amount += $cart->get_subtotal() + $cart->get_subtotal_tax();
+        // Get subtotal after coupons/discounts
+        $subtotal = $cart->get_subtotal() + $cart->get_subtotal_tax();
+        
+        // Get total discount amount (coupons)
+        $discount_total = $cart->get_discount_total() + $cart->get_discount_tax();
+        
+        // Calculate subtotal after coupons
+        $subtotal_after_coupons = max( 0, $subtotal - $discount_total );
+
+        // Add subtotal after coupons to base amount
+        $base_amount += $subtotal_after_coupons;
 
         // Shipping total (including taxes)
         $base_amount += $cart->get_shipping_total() + $cart->get_shipping_tax();
