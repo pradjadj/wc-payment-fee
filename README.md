@@ -33,8 +33,8 @@ Plugin WooCommerce untuk menambahkan biaya tambahan pembayaran yang dihitung dar
 Saat plugin dihapus, semua pengaturan akan dihapus secara otomatis.
 
 ## Versi
-1.1 = Update perhitungan fee berdasarkan "Subtotal - Coupon" + "Ongkir" + "Other Fee"
-1.0 = Rilis Awal
+- 1.1 = Update perhitungan fee berdasarkan "Subtotal - Coupon" + "Ongkir" + "Other Fee"
+- 1.0 = Rilis Awal
 
 ## Author
 
