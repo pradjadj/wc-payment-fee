@@ -3,7 +3,7 @@
 Plugin Name: WC Payment Fee
 Description: Adds an additional payment fee calculated from product price + shipping + other fees per payment method.
 Version: 1.2
-Author: Pradja DJ
+Author: SGNet
 Author URI: https://sgnet.co.id
 */
 
