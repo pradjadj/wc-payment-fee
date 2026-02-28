@@ -27,6 +27,11 @@ class WC_Payment_Fee_GitHub_Updater {
      * Check for updates from GitHub
      */
     public function check_for_update( $transient ) {
+        // Check if auto-updates are enabled
+        if ( ! get_option( 'wc_payment_fee_auto_updates_enabled', true ) ) {
+            return $transient;
+        }
+
         if ( empty( $transient->checked ) ) {
             return $transient;
         }
@@ -65,6 +70,11 @@ class WC_Payment_Fee_GitHub_Updater {
      * Provide plugin API information for WordPress
      */
     public function plugin_api_call( $result, $action, $args ) {
+        // Check if auto-updates are enabled
+        if ( ! get_option( 'wc_payment_fee_auto_updates_enabled', true ) ) {
+            return $result;
+        }
+
         if ( $action !== 'plugin_information' ) {
             return $result;
         }

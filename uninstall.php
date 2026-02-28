@@ -6,4 +6,6 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 // Delete plugin options
 delete_option( 'wc_payment_fee_settings' );
+delete_option( 'wc_payment_fee_auto_updates_enabled' );
+delete_transient( 'wc_payment_fee_github_release' );
 ?>
