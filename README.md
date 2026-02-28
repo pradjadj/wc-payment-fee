@@ -33,7 +33,6 @@ Plugin WooCommerce untuk menambahkan biaya tambahan pembayaran yang dihitung dar
 Saat plugin dihapus, semua pengaturan akan dihapus secara otomatis.
 
 ## Versi
-- 1.2.1 = penambahan fitur minor untuk update plugin ke WordPress
 - 1.2 = update script perhitungan fee agar lebih bersih dan akurat secara matematis. Ditambah ada guard $rate < 1 untuk mencegah pembagian dengan nol atau hasil negatif/tak terhingga jika MDR diset ≥ 100% (misal input salah).
 - 1.1 = Update perhitungan fee berdasarkan "Subtotal - Coupon" + "Ongkir" + "Other Fee"
 - 1.0 = Rilis Awal

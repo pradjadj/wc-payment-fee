@@ -2,19 +2,15 @@
 /*
 Plugin Name: WC Payment Fee
 Description: Adds an additional payment fee calculated from product price + shipping + other fees per payment method.
-Version: 1.2.1
+Version: 1.2
 Author: Pradja DJ
 Author URI: https://sgnet.co.id
-Plugin Update URI: https://github.com/pradjadj/wc-payment-fee
 */
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-
-// Load GitHub updater for automatic updates
-require_once( plugin_dir_path( __FILE__ ) . 'includes/class-github-updater.php' );
 
 class WC_Payment_Fee_Plugin {
 
@@ -43,12 +39,6 @@ class WC_Payment_Fee_Plugin {
 
         // Add settings page under WooCommerce menu
         add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
-
-        // Handle auto-updates toggle
-        add_action( 'wp_ajax_wc_payment_fee_toggle_autoupdate', array( $this, 'toggle_auto_updates_ajax' ) );
-
-        // Enqueue scripts for plugin page
-        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
     }
 
     public function reorder_payment_fee( $fees ) {
@@ -155,73 +145,7 @@ class WC_Payment_Fee_Plugin {
     public function add_settings_link( $links ) {
         $settings_link = '<a href="admin.php?page=wc-payment-fee-settings">Settings</a>';
         array_unshift( $links, $settings_link );
-
-        // Add auto-update toggle link
-        $auto_updates_enabled = $this->is_auto_updates_enabled();
-        $toggle_text = $auto_updates_enabled ? 'Disable Auto-updates' : 'Enable Auto-updates';
-        $toggle_class = $auto_updates_enabled ? 'wc-payment-fee-disable-autoupdate' : 'wc-payment-fee-enable-autoupdate';
-        $toggle_link = sprintf(
-            '<a href="#" class="wc-payment-fee-toggle-autoupdate %s" data-nonce="%s">%s</a>',
-            esc_attr( $toggle_class ),
-            esc_attr( wp_create_nonce( 'wc_payment_fee_autoupdate_nonce' ) ),
-            esc_html( $toggle_text )
-        );
-        array_unshift( $links, $toggle_link );
-
         return $links;
-    }
-
-    /**
-     * Check if auto-updates are enabled for this plugin
-     */
-    public function is_auto_updates_enabled() {
-        return get_option( 'wc_payment_fee_auto_updates_enabled', true );
-    }
-
-    /**
-     * Handle AJAX request to toggle auto-updates
-     */
-    public function toggle_auto_updates_ajax() {
-        check_ajax_referer( 'wc_payment_fee_autoupdate_nonce', 'nonce' );
-
-        if ( ! current_user_can( 'manage_plugins' ) ) {
-            wp_send_json_error( array( 'message' => 'Insufficient permissions' ), 403 );
-        }
-
-        $current_status = $this->is_auto_updates_enabled();
-        $new_status = ! $current_status;
-
-        update_option( 'wc_payment_fee_auto_updates_enabled', $new_status );
-
-        wp_send_json_success( array(
-            'enabled'     => $new_status,
-            'button_text' => $new_status ? 'Disable Auto-updates' : 'Enable Auto-updates',
-        ) );
-    }
-
-    /**
-     * Enqueue admin scripts for toggle functionality
-     */
-    public function enqueue_admin_scripts( $hook ) {
-        if ( 'plugins.php' !== $hook ) {
-            return;
-        }
-
-        wp_enqueue_script(
-            'wc-payment-fee-admin',
-            plugin_dir_url( __FILE__ ) . 'js/wc-payment-fee-admin.js',
-            array( 'jquery' ),
-            '1.0.0',
-            true
-        );
-
-        wp_localize_script(
-            'wc-payment-fee-admin',
-            'wcPaymentFeeAdmin',
-            array(
-                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-            )
-        );
     }
 
     public function register_settings() {
@@ -326,6 +250,5 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'wc-payment-fee-js', plugin_dir_url( __FILE__ ) . 'js/wc-payment-fee.js', array( 'jquery', 'wc-checkout' ), '1.0.0', true );
     }
 } );
-
 
 ?>
