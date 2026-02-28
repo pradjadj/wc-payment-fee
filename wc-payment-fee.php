@@ -5,12 +5,16 @@ Description: Adds an additional payment fee calculated from product price + ship
 Version: 1.2
 Author: Pradja DJ
 Author URI: https://sgnet.co.id
+Plugin Update URI: https://github.com/pradjadj/wc-payment-fee
 */
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+// Load GitHub updater for automatic updates
+require_once( plugin_dir_path( __FILE__ ) . 'includes/class-github-updater.php' );
 
 class WC_Payment_Fee_Plugin {
 
