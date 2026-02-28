@@ -2,7 +2,7 @@
 /*
 Plugin Name: WC Payment Fee
 Description: Adds an additional payment fee calculated from product price + shipping + other fees per payment method.
-Version: 1.1
+Version: 1.2
 Author: Pradja DJ
 Author URI: https://sgnet.co.id
 */
@@ -120,13 +120,9 @@ class WC_Payment_Fee_Plugin {
         if ( isset( $method_settings['fee_type'] ) && isset( $method_settings['fee_amount'] ) ) {
             $rounding = ! empty( $method_settings['rounding'] );
             if ( $method_settings['fee_type'] === 'percent' ) {
-                // Two-tiered percentage fee calculation
-                $first_fee = (float) $method_settings['fee_amount'] / 100 * $base_amount;
-                if ( $rounding ) {
-                    $first_fee = ceil( $first_fee );
-                }
-                $new_subtotal = $base_amount + $first_fee;
-                $fee_amount = (float) $method_settings['fee_amount'] / 100 * $new_subtotal;
+                // Gross-up MDR fee: (base / (1 - rate)) - base
+                $rate       = (float) $method_settings['fee_amount'] / 100;
+                $fee_amount = ( $rate < 1 ) ? ( $base_amount / ( 1 - $rate ) ) - $base_amount : 0;
                 if ( $rounding ) {
                     $fee_amount = ceil( $fee_amount );
                 }
